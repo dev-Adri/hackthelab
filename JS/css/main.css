@@ -1,0 +1,19 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+#canvas {
+    border: 2px solid black;
+}
+
+#canvascontainer {
+    position: absolute;
+}
+
+#networkchat {
+    position: absolute;
+    bottom: 2%;
+    left: 2%;
+}
