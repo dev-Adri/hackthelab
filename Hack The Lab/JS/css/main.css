@@ -1,0 +1,51 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+#canvascontainer {
+    position: absolute;
+}
+
+#networkchat {
+    position: absolute;
+    bottom: 2%;
+    right: 2%;
+}
+
+#chatstyle {
+    position: absolute;
+    background-color: #696969;
+    right: 0%;
+    top: 0%;
+    height: 100%;
+    width: 30%;
+}
+
+#voicestyle {
+    position: absolute;
+    background-color: #ff6d41;
+    left: 0%;
+    bottom: 0%;
+    width: 70%;
+    height: 40%;
+}
+
+#networkchat {
+    position: absolute;
+    right: 16%;
+    bottom: 5%;
+}
+
+#messageinput {
+    position: absolute;
+    width: 300px; 
+}
+
+#messagecontainer {
+    position: relative;
+    bottom: 10%;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}

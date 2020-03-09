@@ -1,0 +1,221 @@
+<!-- TODO: Take the users database and project it onto the chat voice chat thingy -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>E-Class</title>
+    <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    #canvascontainer {
+        position: absolute;
+    }
+
+    #networkchat {
+        position: absolute;
+        bottom: 2%;
+        right: 2%;
+    }
+
+    #chatstyle {
+        position: absolute;
+        background-color: #ccccb3;
+        right: 0%;
+        top: 0%;
+        height: 100%;
+        width: 30%;
+    }
+
+    #voicestyle {
+        position: absolute;
+        background-color: #8c1aff;
+        left: 0%;
+        bottom: 0%;
+        width: 70%;
+        height: 10%;
+    }
+
+    #networkchat {
+        position: absolute;
+        right: 16%;
+        bottom: 10%;
+    }
+
+    #messageinput {
+        position: absolute;
+        width: 150px; 
+    }
+
+    #messagecontainer {
+        position: relative;
+        width: 160px;
+        right: -75%;
+    }
+    #clear {
+        position: absolute;
+        right: 30%;
+    }
+    #sendcontainer {
+        position: absolute;
+        right: 30%;
+    }
+
+    </style>
+</head>
+<body>
+  
+  <div id="sidebar-chat"></div>
+  <div id="voicechat"></div>
+  
+
+  <div id="voicestyle"></div>
+  <!-- Drawing board -->
+  <div id="canvascontainer">
+    <canvas id="canvas"></canvas>
+  </div>
+
+  <div id="chatstyle"></div>
+  <!-- Chat -->
+  <div id="networkchat">
+    <div id="messagecontainer"></div>
+    <form id="sendcontainer">
+      <input type="text" id="messageinput">
+    </form>
+  </div>  
+
+
+  <script src="/WebRTC/PeerConnection.js"></script>
+  <script src="/WebRTC/client.js"></script>
+
+  <button id="clear"> Clear </button>
+
+  <script type="application/javascript" src="/socket.io/socket.io.js"></script>
+  <!-- <script type="application/javascript" defer src="../javascript/client.js/"></script>
+
+
+  Client -->
+  <script>
+
+    // MESSAGING CODE
+
+    const socket = io('192.168.43.32:3000');
+    const message_form = document.getElementById('sendcontainer');
+    const message_input = document.getElementById('messageinput');
+    const message_container = document.getElementById('messagecontainer');
+
+    var mousex = 0;
+    var mousey = 0;
+
+    const name = prompt("What is your name: ");
+    appendmessage('You joined the chat!')
+    socket.emit('new-user', name);
+
+    socket.on('chat-message', data => {
+        appendmessage(`${data.name}: ${data.message}`);
+    });
+
+    socket.on('user-connected', name => {
+        appendmessage(`${name} connected`);
+    });
+
+    socket.on('user-disconnected', name => {
+        appendmessage(`${name} disconnected`);
+    });
+
+    socket.on('mousecords', newDraw);
+
+    socket.on('clearcanvas', function() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+    });
+
+    message_form.addEventListener('submit', e => {
+        e.preventDefault();
+        const message = message_input.value;
+        appendmessage(`You: ${message}`);
+        socket.emit('send-chat-message', message);
+        message_input.value = '';
+    });
+
+
+    function appendmessage(message) {
+        const messageelement = document.createElement('div');
+        messageelement.setAttribute('style', 'word-break: break-all;');
+        messageelement.innerText = message;
+        message_container.append(messageelement);
+    }
+
+    // THE DRAWINGN BOARD CODE
+
+    // window.addEventListener('load', () => {
+        const canvas = document.querySelector("#canvas");
+        const ctx = canvas.getContext('2d');
+        const mouseX = document.getElementById('mousex');
+        const mouseY = document.getElementById('mousey');
+
+        canvas.width = window.innerWidth * 0.75;
+        canvas.height = window.innerHeight * 0.9;
+
+        var painting = false;
+
+        function startPosition(e) {
+            painting = true;
+            draw(e)
+        }
+        function finishedPosition() {
+            painting = false;
+            ctx.beginPath();
+        }
+        function draw(e) {
+            if (!painting) {
+                return
+            }
+
+            ctx.lineWidth = 4;
+            ctx.lineCap = "round";
+
+            ctx.lineTo(e.clientX, e.clientY);
+            ctx.stroke();
+
+            mousex = e.clientX;
+            mousey = e.clientY;
+
+            data = {x: e.clientX, y: e.clientY};
+
+            socket.emit('mousecord', data);
+        }
+
+        function newDraw(data) {
+            ctx.lineWidth = 4;
+            ctx.lineCap = "round";
+
+            ctx.beginPath();
+            ctx.lineTo(data.x, data.y);
+            ctx.stroke();
+        }
+
+        document.getElementById('clear').addEventListener('click', clearcanvas, false);
+
+        function clearcanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
+            socket.emit('clearcanvas', '');
+        }
+
+        canvas.addEventListener('mousedown', startPosition);
+        canvas.addEventListener('mouseup', finishedPosition);
+        canvas.addEventListener('mousemove', draw);
+
+        // VOICECHAT
+        
+// });
+
+    
+  </script>
+
+</body>
+</html>
